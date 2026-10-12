@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f2eee4" />
+  <title>微信打开版 · 山林秘境骰子大冒险</title>
+  <style>
+500&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap');
+
+:root { --paper: #f2eee4; --surface: #fffdf7; --ink: #28332c; --muted: #7e877e; --line: #e5ddcc; --green: #6c986e; --green-deep: #466d53; --green-pale: #e4eee1; --gold: #c59042; --gold-pale: #fff0c9; --red: #bc665b; --red-pale: #f9e5df; --purple: #8d75a7; --purple-pale: #efe7f5; --shadow: 0 13px 32px rgba(61, 71, 53, .09); }
+* { box-sizing: border-box; }
+html { min-height: 100%; background: var(--paper); }
+body { margin: 0; min-width: 320px; overflow-x: hidden; color: var(--ink); font-family: 'Noto Sans SC', system-ui, sans-serif; background: var(--paper); -webkit-tap-highlight-color: transparent; }
+button { font: inherit; }
+button:focus-visible { outline: 3px solid rgba(86, 133, 112, .35); outline-offset: 3px; }
+.app-shell { width: 100%; max-width: 540px; margin: 0 auto; padding: max(20px, env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom)); }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 17px; }
+.brand-lockup { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand-mark { display: grid; place-items: center; flex: 0 0 auto; width: 34px; height: 34px; color: #fffdf7; background: var(--green-deep); border-radius: 50%; font-size: 19px; box-shadow: 0 5px 12px rgba(70,109,83,.22); }
+.eyebrow { margin: 0; color: var(--green-deep); font: 500 10px/1.3 'DM Mono', monospace; letter-spacing: .13em; text-transform: uppercase; }
+h1, h2, p { margin-top: 0; }
+h1 { margin: 2px 0 0; overflow: hidden; font-size: 17px; line-height: 1.25; letter-spacing: .02em; text-overflow: ellipsis; white-space: nowrap; }
+h2 { margin: 3px 0 0; font-size: 21px; line-height: 1.3; letter-spacing: -.025em; }
+.icon-button { width: 34px; height: 34px; padding: 0; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 50%; cursor: pointer; box-shadow: 0 4px 14px rgba(61,71,53,.05); }
+.icon-button:hover { background: #fff; transform: translateY(-1px); }
+
+.hero-strip { position: relative; display: flex; min-height: 160px; align-items: center; overflow: hidden; padding: 24px 20px; background: #dce8d8; border: 1px solid #c9dac6; border-radius: 19px; }
+.hero-copy { position: relative; z-index: 1; width: 72%; }
+.hero-strip h2 { max-width: 280px; margin-top: 9px; font-size: clamp(21px, 5.6vw, 28px); }
+.hero-note { margin: 10px 0 0; color: #607563; font-size: 12px; line-height: 1.65; }
+.hero-art { position: absolute; right: -5px; bottom: 0; width: 45%; opacity: .92; }
+.hero-art svg { display: block; width: 100%; height: auto; }
+
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; padding: 15px 2px 14px; }
+.stat-item { display: flex; min-width: 0; align-items: center; justify-content: center; gap: 7px; }
+.stat-icon { display: grid; place-items: center; flex: 0 0 auto; width: 27px; height: 27px; border-radius: 9px; font-size: 13px; }
+.stat-icon--heart { color: #b65750; background: var(--red-pale); }
+.stat-icon--route { color: #9c7334; background: var(--gold-pale); }
+.stat-icon--round { color: var(--green-deep); background: var(--green-pale); }
+.stat-item > span:last-child { display: grid; min-width: 0; gap: 1px; }
+.stat-item small { overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.stat-item strong { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+
+.inventory-card, .map-card, .action-card, .log-card { padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+.inventory-card { margin-bottom: 12px; }
+.players-card { margin-bottom: 12px; padding: 17px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+.turn-pill { flex: 0 0 auto; padding: 5px 9px; color: var(--green-deep); background: var(--green-pale); border-radius: 999px; font-size: 10px; font-weight: 700; }
+.player-list { display: grid; gap: 7px; margin-top: 12px; }
+.player-row { display: grid; grid-template-columns: 29px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-width: 0; padding: 8px 9px; background: #fbf8f0; border: 1px solid #ebe3d4; border-left: 3px solid var(--player-color); border-radius: 10px; opacity: .66; transition: opacity .2s, background .2s, box-shadow .2s; }
+.player-row.is-active { opacity: 1; background: #fffaf0; box-shadow: 0 4px 12px rgba(61,71,53,.08); }
+.player-avatar { display: grid; place-items: center; width: 27px; height: 27px; color: #fff; background: var(--player-color); border-radius: 50%; font-size: 14px; font-weight: 800; }
+.player-copy { display: grid; min-width: 0; gap: 2px; }
+.player-copy strong { overflow: hidden; color: var(--ink); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.player-copy small { overflow: hidden; color: #92988d; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.player-items { color: #9c9e94; font: 10px 'DM Mono', monospace; white-space: nowrap; }
+.section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.section-heading--small { align-items: center; }
+.section-heading h2 { font-size: 18px; }
+.inventory-hint { color: #a3a49a; font-size: 10px; }
+.inventory-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-top: 13px; }
+.item-button { display: grid; min-width: 0; gap: 2px; justify-items: center; padding: 8px 4px 7px; color: var(--ink); background: #fbf8ef; border: 1px solid #ebe3d4; border-radius: 11px; cursor: pointer; transition: background .2s, border-color .2s, transform .2s; }
+.item-button:hover:not(:disabled) { background: #fff; border-color: #cdbd9b; transform: translateY(-1px); }
+.item-button:disabled { cursor: default; opacity: .52; }
+.item-icon { font-size: 19px; line-height: 1; }
+.item-name { max-width: 100%; overflow: hidden; color: #606a60; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.item-count { color: var(--green-deep); font: 500 10px 'DM Mono', monospace; }
+
+.map-card { padding-bottom: 17px; }
+.progress-pill { flex: 0 0 auto; padding: 5px 9px; color: var(--green-deep); background: var(--green-pale); border-radius: 999px; font: 500 11px 'DM Mono', monospace; }
+.route-tabs { display: flex; gap: 8px; margin: 15px 0 10px; padding-bottom: 9px; border-bottom: 1px solid #eee8dc; }
+.route-tab { padding: 6px 10px; color: #9b9e94; background: transparent; border: 0; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; }
+.route-tab span { color: inherit; font: 500 9px 'DM Mono', monospace; }
+.route-tab.is-active { color: var(--green-deep); background: var(--green-pale); }
+.route-tab.is-locked { color: #aaa69c; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 9px; margin: 0 0 12px; color: #999c92; font-size: 10px; }
+.map-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.legend-dot { width: 6px; height: 6px; border-radius: 50%; background: #d2d2c8; }
+.legend-dot--current { background: var(--red); box-shadow: 0 0 0 3px var(--red-pale); }
+.legend-dot--good { background: var(--green); }
+.legend-dot--danger { background: var(--red); }
+.legend-dot--finish { background: var(--gold); }
+.board { display: grid; width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.board--side { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.board[hidden] { display: none; }
+.tile { position: relative; display: flex; min-width: 0; min-height: 91px; flex-direction: column; justify-content: space-between; padding: 8px; overflow: hidden; background: #fcfaf4; border: 1px solid #ebe2d1; border-radius: 12px; transition: transform .22s, border-color .22s, box-shadow .22s, background .22s; }
+.tile::after { content: ''; position: absolute; right: -10px; bottom: -13px; width: 45px; height: 45px; background: currentColor; border-radius: 50%; opacity: .055; }
+.tile:nth-child(3n + 1) { color: #6d946e; }
+.tile:nth-child(3n + 2) { color: #b1864a; }
+.tile:nth-child(3n) { color: #ad6d64; }
+.tile--side { color: var(--purple) !important; background: #fbf8ff; border-color: #dfd2eb; }
+.tile--done { background: #f1f7ef; border-color: #d6e5d2; }
+.tile--side.tile--done { background: #f4eef9; border-color: #d9c9e7; }
+.tile--current { z-index: 1; background: #fff7e8; border: 2px solid var(--red); box-shadow: 0 6px 16px rgba(188,102,91,.2); transform: translateY(-3px); }
+.tile--side.tile--current { background: #faf1ff; border-color: var(--purple); box-shadow: 0 6px 16px rgba(141,117,167,.22); }
+.tile--next { border-color: #d1ae66; border-style: dashed; }
+.tile--finish { background: #f0f6e9; border-color: #b2c993; }
+.tile--side.tile--finish { background: #f1e9f7; border-color: #bca5d1; }
+.tile-num { color: #a2a294; font: 500 10px 'DM Mono', monospace; }
+.tile-icon { font-size: 22px; line-height: 1; }
+.player-token { position: absolute; z-index: 2; top: 27px; display: grid; place-items: center; width: 19px; height: 19px; color: #fff; border: 2px solid #fffdf7; border-radius: 50%; font-size: 9px; font-weight: 800; box-shadow: 0 2px 6px rgba(30,40,30,.25); }
+.player-token--1 { left: 6px; background: #bc665b; }
+.player-token--2 { left: 27px; background: #6f83b7; }
+.tile-name { min-width: 0; color: var(--ink); font-size: 11px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.tile-label { min-height: 11px; color: #a2a398; font-size: 9px; line-height: 1.2; }
+.tile-badge { position: absolute; top: 7px; right: 7px; padding: 2px 4px; color: var(--red); background: var(--red-pale); border-radius: 4px; font-size: 8px; font-weight: 700; }
+.tile--side .tile-badge { color: var(--purple); background: var(--purple-pale); }
+
+.action-card { display: flex; align-items: center; justify-content: space-between; gap: 13px; margin-top: 12px; padding: 17px 18px; color: #fffdf7; background: #314b3d; border-color: #314b3d; box-shadow: 0 14px 28px rgba(49,75,61,.2); }
+.action-copy { min-width: 0; }
+.action-copy .eyebrow { color: #b4d0b7; }
+.action-copy h2 { font-size: 18px; }
+.action-copy p:last-child { margin: 6px 0 0; color: #d0dbd0; font-size: 11px; line-height: 1.5; }
+.dice-stage { display: grid; flex: 0 0 auto; justify-items: center; gap: 8px; }
+.dice { display: grid; grid-template-columns: repeat(3, 7px); grid-template-rows: repeat(3, 7px); place-content: center; gap: 4px; width: 56px; height: 56px; background: #fffdf7; border: 4px solid #eee2c7; border-radius: 13px; box-shadow: 0 7px 15px rgba(0,0,0,.15); transform: rotate(-6deg); }
+.pip { width: 7px; height: 7px; background: #d08c54; border-radius: 50%; opacity: 0; }
+.pip.is-on { opacity: 1; }
+.roll-button { display: inline-flex; align-items: center; gap: 4px; padding: 0; color: #fff; background: none; border: 0; cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.roll-icon { display: inline-block; font-size: 17px; line-height: 1; transition: transform .3s; }
+.roll-button:hover .roll-icon { transform: rotate(150deg); }
+.roll-button:disabled { cursor: not-allowed; opacity: .5; }
+.roll-button kbd { display: none; }
+.dice.is-rolling { animation: shake .58s ease-in-out; }
+@keyframes shake { 0%,100% { transform: rotate(-6deg) translateY(0); } 25% { transform: rotate(7deg) translateY(-5px); } 50% { transform: rotate(-9deg) translateY(2px); } 75% { transform: rotate(9deg) translateY(-3px); } }
+
+.log-card { margin-top: 12px; box-shadow: none; }
+.text-button { padding: 5px 0; color: var(--green-deep); background: transparent; border: 0; cursor: pointer; font-size: 11px; }
+.log-list { display: grid; gap: 10px; margin-top: 13px; }
+.log-item { display: grid; grid-template-columns: 25px minmax(0, 1fr) auto; align-items: center; gap: 9px; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+.log-item:last-child { padding-bottom: 0; border-bottom: 0; }
+.log-icon { display: grid; place-items: center; width: 25px; height: 25px; color: var(--green-deep); background: var(--green-pale); border-radius: 8px; font-size: 12px; }
+.log-item p { margin: 0; color: #606a61; font-size: 11px; line-height: 1.45; }
+.log-item time { color: #aaa99f; font: 10px 'DM Mono', monospace; }
+.empty-log { margin: 0; color: #abb0a5; font-size: 11px; text-align: center; }
+.footer-note { padding: 18px 0 0; color: #9da097; font-size: 10px; text-align: center; }
+
+.modal-backdrop { position: fixed; z-index: 10; inset: 0; display: grid; place-items: center; padding: 22px; background: rgba(38,48,40,.45); backdrop-filter: blur(4px); }
+.modal-backdrop[hidden] { display: none; }
+.modal { position: relative; width: min(100%, 370px); max-height: calc(100vh - 44px); overflow: auto; padding: 28px 24px 23px; background: var(--surface); border-radius: 20px; box-shadow: 0 24px 60px rgba(23,35,29,.26); text-align: center; animation: modal-in .25s ease-out; }
+@keyframes modal-in { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.modal-close { position: absolute; top: 12px; right: 12px; border: 0; box-shadow: none; font-size: 22px; line-height: 1; }
+.modal-symbol { display: grid; place-items: center; width: 55px; height: 55px; margin: 0 auto 13px; color: #a87329; background: var(--gold-pale); border-radius: 18px; font-size: 26px; }
+.modal h2 { margin-top: 8px; font-size: 22px; }
+.modal p:not(.eyebrow) { margin: 10px auto 0; max-width: 275px; color: #727b72; font-size: 13px; line-height: 1.7; }
+.modal-reward { display: inline-block; margin: 15px auto 18px; padding: 6px 10px; color: #9c6e27; background: var(--gold-pale); border-radius: 8px; font-size: 12px; font-weight: 700; }
+.primary-button, .secondary-button, .tertiary-button { width: 100%; padding: 11px; border-radius: 11px; cursor: pointer; font-size: 12px; font-weight: 700; }
+.primary-button { color: #fff; background: var(--green-deep); border: 0; }
+.primary-button:hover { background: #385d45; }
+.secondary-button { margin-bottom: 8px; color: var(--green-deep); background: var(--green-pale); border: 1px solid #d2e2d0; }
+.secondary-button:hover { background: #dbe9d9; }
+.tertiary-button { margin-bottom: 8px; color: #a15f4d; background: var(--red-pale); border: 1px solid #efd0c8; }
+.tertiary-button:hover { background: #f5ded8; }
+.toast { position: fixed; z-index: 12; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom)); max-width: calc(100% - 36px); padding: 9px 13px; color: #fff; background: rgba(39,51,43,.92); border-radius: 999px; font-size: 11px; opacity: 0; pointer-events: none; transform: translate(-50%, 8px); transition: opacity .25s, transform .25s; }
+.toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+@media (min-width: 540px) { .app-shell { padding-top: 30px; } .tile { min-height: 96px; } }
+@media (max-width: 365px) {
+  .app-shell { padding-inline: 14px; }
+  .hero-strip, .inventory-card, .map-card, .action-card, .log-card { border-radius: 15px; }
+  .hero-strip { padding-inline: 16px; }
+  .inventory-card, .map-card, .log-card { padding-inline: 14px; }
+  .action-card { padding-inline: 14px; }
+  .inventory-list { gap: 4px; }
+  .item-button { padding-inline: 2px; }
+  .tile { min-height: 82px; padding: 7px; }
+  .tile-icon { font-size: 20px; }
+  .tile-name { font-size: 10px; }
+}
+
+.online-card { margin: 0 0 12px; padding: 14px 16px; background: #fffdf7; border: 1px solid #d8e2d2; border-radius: 15px; box-shadow: 0 8px 20px rgba(61,71,53,.07); }
+.online-card__heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.online-card h2 { margin: 2px 0 0; font-size: 17px; }
+.online-status { color: #6f7b70; font-size: 10px; text-align: right; }
+.online-actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
+.online-actions button, .online-join button { min-height: 38px; padding: 8px 12px; color: #fff; background: var(--green-deep); border: 0; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 700; }
+.online-join { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
+.online-join input { min-width: 0; padding: 8px 10px; color: var(--ink); background: #fbf8ef; border: 1px solid #e2d9c9; border-radius: 10px; font: 700 13px 'DM Mono', monospace; letter-spacing: .12em; text-transform: uppercase; }
+.online-join input::placeholder { color: #aaa99f; font: 400 11px 'Noto Sans SC', sans-serif; letter-spacing: 0; text-transform: none; }
+.online-room { display: grid; gap: 8px; margin-top: 11px; }
+.online-room-code { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; color: var(--green-deep); background: var(--green-pale); border-radius: 10px; }
+.online-room-code strong { font: 800 18px 'DM Mono', monospace; letter-spacing: .16em; }
+.online-room-code button { padding: 5px 8px; color: var(--green-deep); background: transparent; border: 1px solid #bbd0b9; border-radius: 7px; cursor: pointer; font-size: 10px; font-weight: 700; }
+.online-hint { margin: 8px 0 0; color: #8d9489; font-size: 10px; line-height: 1.5; }
+.online-card.is-connected { border-color: #b7d0b6; }
+
+</style>
+</head>
+<body>
+  <section class="online-card" id="onlineCard" aria-labelledby="onlineTitle">
+    <div class="online-card__heading">
+      <div><p class="eyebrow">ONLINE ROOM</p><h2 id="onlineTitle">两部手机联机</h2></div>
+      <span class="online-status" id="onlineStatus">未连接</span>
+    </div>
+    <div id="onlineLobby">
+      <div class="online-actions">
+        <button id="createRoomButton" type="button">创建房间</button>
+        <div class="online-join"><input id="roomCodeInput" maxlength="5" autocomplete="off" placeholder="输入 5 位房间码" aria-label="房间码" /><button id="joinRoomButton" type="button">加入房间</button></div>
+      </div>
+      <p class="online-hint" id="onlineHint">一部手机创建房间，另一部手机打开同一网页后输入房间码。</p>
+    </div>
+    <div class="online-room" id="onlineRoom" hidden>
+      <div class="online-room-code"><span>房间码</span><strong id="roomCodeValue">-----</strong><button id="copyRoomButton" type="button">复制</button></div>
+      <p class="online-hint" id="onlineRoomHint">等待另一位玩家加入。</p>
+    </div>
+  </section>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true">♧</span>
+        <div>
+          <p class="eyebrow">FOREST MYSTERY</p>
+          <h1>山林秘境 · 骰子大冒险</h1>
+        </div>
+      </div>
+      <button class="icon-button" id="rulesButton" type="button" aria-label="查看玩法" title="查看玩法">?</button>
+    </header>
+
+    <section class="hero-strip" aria-label="冒险简介">
+      <div class="hero-copy">
+        <p class="eyebrow">主线 0—32 · <span id="roundValue">1</span> 回合</p>
+        <h2>穿过秘境，登上山顶圣殿。</h2>
+        <p class="hero-note">两位玩家轮流掷骰，格子事件会改变路线。8 号路口可以进入秘径，挑战完美结局。</p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 160 96" role="presentation">
+          <path d="M0 96 31 46l17 22 24-39 25 48 22-28 41 47H0Z" fill="#b8cfb9" />
+          <path d="M0 96 31 46l17 22 24-39 25 48 22-28 41 47" fill="none" stroke="#60896d" stroke-width="2" stroke-linejoin="round" />
+          <path d="M88 96c4-22 8-40 8-58M112 96c2-18 6-31 14-44" fill="none" stroke="#6e956f" stroke-width="3" stroke-linecap="round" />
+          <circle cx="129" cy="18" r="10" fill="#eacb7e" />
+          <path d="M0 88c28-8 51-5 76 2 27 7 55 6 84-2" fill="none" stroke="#829f7c" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </div>
+    </section>
+
+    <section class="players-card" aria-labelledby="playersTitle">
+      <div class="section-heading section-heading--small">
+        <div><p class="eyebrow">TWO PLAYER MODE</p><h2 id="playersTitle">双人共闯</h2></div>
+        <span class="turn-pill" id="turnPill">玩家 1 回合</span>
+      </div>
+      <div class="player-list" id="playerList" aria-live="polite"></div>
+    </section>
+
+    <section class="stats-row" aria-label="冒险状态">
+      <div class="stat-item"><span class="stat-icon stat-icon--heart">♥</span><span><small>生命</small><strong id="healthValue">3 / 3</strong></span></div>
+      <div class="stat-item"><span class="stat-icon stat-icon--route">⌁</span><span><small>当前位置</small><strong id="positionValue">0 · 营地</strong></span></div>
+      <div class="stat-item"><span class="stat-icon stat-icon--round">◷</span><span><small>回合</small><strong id="roundMiniValue">1</strong></span></div>
+    </section>
+
+    <section class="inventory-card" aria-labelledby="inventoryTitle">
+      <div class="section-heading section-heading--small">
+        <div><p class="eyebrow">ADVENTURER BAG</p><h2 id="inventoryTitle">冒险道具</h2></div>
+        <span class="inventory-hint">点击可使用</span>
+      </div>
+      <div class="inventory-list" id="inventoryList"></div>
+    </section>
+
+    <section class="map-card" aria-labelledby="mapTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">FOREST ROUTE</p><h2 id="mapTitle">山林秘境路线</h2></div>
+        <span class="progress-pill"><span id="progressValue">0</span><span id="progressTotal"> / 32</span></span>
+      </div>
+      <div class="route-tabs" role="tablist" aria-label="路线视图">
+        <button class="route-tab is-active" id="mainRouteTab" type="button" role="tab" aria-selected="true">主线山道</button>
+        <button class="route-tab" id="sideRouteTab" type="button" role="tab" aria-selected="false">支线秘径 <span>A1—A14</span></button>
+      </div>
+      <div class="map-legend" aria-label="地图提示">
+        <span><i class="legend-dot legend-dot--current"></i>当前位置</span>
+        <span><i class="legend-dot legend-dot--good"></i>奖励/前进</span>
+        <span><i class="legend-dot legend-dot--danger"></i>危险判定</span>
+        <span><i class="legend-dot legend-dot--finish"></i>结局</span>
+      </div>
+      <div class="board" id="mainBoard" aria-label="主线 0 到 32 格"></div>
+      <div class="board board--side" id="sideBoard" aria-label="支线 A1 到 A14 格" hidden></div>
+    </section>
+
+    <section class="action-card" aria-labelledby="actionTitle">
+      <div class="action-copy">
+        <p class="eyebrow">YOUR MOVE</p>
+        <h2 id="actionTitle">营地已备好</h2>
+        <p id="actionHint">幸运护盾在手，掷出第一步吧。</p>
+      </div>
+      <div class="dice-stage">
+        <div class="dice" id="dice" aria-label="骰子点数 1"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+        <button class="roll-button" id="rollButton" type="button"><span class="roll-icon">↻</span><span>掷骰子</span><kbd>SPACE</kbd></button>
+      </div>
+    </section>
+
+    <section class="log-card" aria-labelledby="logTitle">
+      <div class="section-heading section-heading--small">
+        <div><p class="eyebrow">TRAIL NOTES</p><h2 id="logTitle">冒险记录</h2></div>
+        <button class="text-button" id="resetButton" type="button">重新开始</button>
+      </div>
+      <div class="log-list" id="logList" aria-live="polite"></div>
+    </section>
+
+    <footer class="footer-note">双人轮流掷骰 · 先抵达任意终点的一方获胜</footer>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close icon-button" id="modalClose" type="button" aria-label="关闭">×</button>
+      <div class="modal-symbol" id="modalSymbol">✦</div>
+      <p class="eyebrow" id="modalEyebrow">EVENT</p>
+      <h2 id="modalTitle">营地起点</h2>
+      <p id="modalBody">幸运护盾已经装入背包。</p>
+      <div class="modal-reward" id="modalReward">幸运护盾 × 1</div>
+      <button class="secondary-button" id="modalSecondary" type="button" hidden>备用选项</button>
+      <button class="tertiary-button" id="modalTertiary" type="button" hidden>使用道具</button>
+      <button class="primary-button" id="modalAction" type="button">继续</button>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+const mainTiles = [
+  { id: '0', name: '营地起点', icon: '⛺', label: '幸运护盾', type: 'camp' },
+  { id: '1', name: '林间小道', icon: '🌲', label: '无事发生', type: 'safe' },
+  { id: '2', name: '清泉', icon: '💧', label: '治愈草药', type: 'herb' },
+  { id: '3', name: '野兔引路', icon: '🐇', label: '前进 + 2 格', type: 'rabbit' },
+  { id: '4', name: '荆棘丛', icon: '🌿', label: '扣 1 ♥ · 后退 2', type: 'thorns' },
+  { id: '5', name: '林间宝箱', icon: '🧰', label: '偶数得疾风符', type: 'chest' },
+  { id: '6', name: '摇晃木桥', icon: '🌉', label: '≥4 安全', type: 'bridge' },
+  { id: '7', name: '漫山花海', icon: '🌸', label: '下一掷 + 1', type: 'flowers' },
+  { id: '8', name: '十字路口', icon: '👉', label: '主线 / 支线', type: 'crossroad' },
+  { id: '9', name: '半山腰营地', icon: '🏕', label: '生命 + 1', type: 'campHeal' },
+  { id: '10', name: '落石区', icon: '🪨', label: '≤2 扣 1 ♥', type: 'rocks' },
+  { id: '11', name: '山风助力', icon: '🍃', label: '前进 + 2 格', type: 'windHelp' },
+  { id: '12', name: '隐士小屋', icon: '🛖', label: '答对 + 3 格', type: 'hermit' },
+  { id: '13', name: '许愿石', icon: '🪨', label: '免费重掷', type: 'wish' },
+  { id: '14', name: '野果林', icon: '🍎', label: '免疫负面', type: 'fruit' },
+  { id: '15', name: '断裂吊桥', icon: '🌉', label: '≥5 + 2 格', type: 'brokenBridge' },
+  { id: '16', name: '狂风谷', icon: '🌪', label: '后退 2 格', type: 'gale' },
+  { id: '17', name: '萤火小径', icon: '✨', label: '前进 + 1 格', type: 'firefly' },
+  { id: '18', name: '暗洞穴', icon: '🕳', label: '奇数 +3 · 偶数 -1', type: 'cave' },
+  { id: '19', name: '山间驿站', icon: '🏡', label: '时光回溯 / 生命', type: 'station' },
+  { id: '20', name: '迷雾山门', icon: '🌫', label: '下一掷 + 1', type: 'mistGate' },
+  { id: '21', name: '巨石阵', icon: '🗿', label: '掷 6 跳 28', type: 'stoneCircle' },
+  { id: '22', name: '山巅平台', icon: '🔭', label: '检查点', type: 'checkpoint' },
+  { id: '23', name: '流云坡', icon: '☁', label: '平安无事', type: 'cloudSlope' },
+  { id: '24', name: '山涧泥潭', icon: '🟫', label: '扣 1 ♥ · 后退 1', type: 'swamp' },
+  { id: '25', name: '灵鸟赠礼', icon: '🦜', label: '恢复一件道具', type: 'bird' },
+  { id: '26', name: '雷云地带', icon: '⚡', label: '≤3 丢道具', type: 'thunder' },
+  { id: '27', name: '观景台', icon: '🌄', label: '生命 + 1', type: 'lookout' },
+  { id: '28', name: '千年古松', icon: '🌳', label: '下两掷 + 1', type: 'pine' },
+  { id: '29', name: '山妖考验', icon: '👺', label: '≥4 +2 · 失败扣 ♥', type: 'troll' },
+  { id: '30', name: '天门石阶', icon: '🪜', label: '前进 + 2 格', type: 'stairs' },
+  { id: '31', name: '终点迷雾', icon: '🌁', label: '停留一回合', type: 'finishMist' },
+  { id: '32', name: '山顶圣殿', icon: '🏆', label: '普通结局', type: 'finish' },
+];
+
+const sideTiles = [
+  { id: 'A1', name: '隐秘洞口', icon: '🕯', label: '进入秘径', type: 'sideEntry' },
+  { id: 'A2', name: '毒蕨草丛', icon: '☠', label: '扣 1 ♥', type: 'sidePoison' },
+  { id: 'A3', name: '地下暗河', icon: '🌊', label: '≥3 安全', type: 'sideRiver' },
+  { id: 'A4', name: '地下宝库', icon: '💎', label: '时光回溯 + 疾风符', type: 'sideVault' },
+  { id: 'A5', name: '回音长廊', icon: '🔊', label: '掷 6 直达 A9', type: 'sideEcho' },
+  { id: 'A6', name: '塌陷路段', icon: '🪨', label: '扣 1 ♥', type: 'sideCollapse' },
+  { id: 'A7', name: '萤石洞穴', icon: '💠', label: '生命 + 1', type: 'sideFluorite' },
+  { id: 'A8', name: '地下岔口', icon: '↔', label: '奇数 +3', type: 'sideFork' },
+  { id: 'A9', name: '秘境石门', icon: '🚪', label: '≥5 跳 A12', type: 'sideGate' },
+  { id: 'A10', name: '深渊边缘', icon: '🕳', label: '扣 1 ♥', type: 'sideAbyss' },
+  { id: 'A11', name: '秘境花园', icon: '🌺', label: '生命全满', type: 'sideGarden' },
+  { id: 'A12', name: '天梯', icon: '🪜', label: '前进 + 3 格', type: 'sideLadder' },
+  { id: 'A13', name: '秘境出口', icon: '🌤', label: '汇合 28 号', type: 'sideExit' },
+  { id: 'A14', name: '秘境圣殿', icon: '🏅', label: '完美结局', type: 'sideFinish' },
+];
+
+const itemMeta = {
+  shield: { icon: '🛡️', name: '幸运护盾', max: 2, use: '负面事件中抵消一次惩罚' },
+  rewind: { icon: '🔄', name: '时光回溯', max: 1, use: '回到上一个位置' },
+  wind: { icon: '🔥', name: '疾风符', max: 1, use: '下一次掷骰额外 +1' },
+  herb: { icon: '🪻', name: '治愈草药', max: 3, use: '恢复 1 点生命' },
+};
+
+const truthPrompts = [
+  '说一个最近让你开心的小事。',
+  '你最想和谁一起爬完这座山？',
+  '用三个词形容今天的心情。',
+  '说出一个你想完成的小目标。',
+];
+const darePrompts = [
+  '用登山队长的语气喊一句“我们马上到山顶！”',
+  '做一个 5 秒钟的胜利姿势。',
+  '模仿一种森林里的声音。',
+  '给队友一句真诚的鼓励。',
+];
+
+function makePlayer(name, color) {
+  return {
+    name,
+    color,
+    route: 'main',
+    position: 0,
+    sidePosition: 0,
+    health: 3,
+    inventory: { shield: 1, rewind: 0, wind: 0, herb: 0 },
+    skipTurns: 0,
+    nextBonus: 0,
+    boostTwo: 0,
+    immune: false,
+    freeReroll: 0,
+    checkpoint: 0,
+    lastRoute: 'main',
+    lastPosition: 0,
+    lastRoll: 1,
+    sideUnlocked: false,
+  };
+}
+
+const state = {
+  playerIndex: 0,
+  players: [makePlayer('玩家 1', '#bc665b'), makePlayer('玩家 2', '#6f83b7')],
+  winner: null,
+  route: 'main',
+  view: 'main',
+  position: 0,
+  sidePosition: 0,
+  health: 3,
+  maxHealth: 3,
+  inventory: { shield: 1, rewind: 0, wind: 0, herb: 0 },
+  round: 1,
+  skipTurns: 0,
+  nextBonus: 0,
+  boostTwo: 0,
+  immune: false,
+  freeReroll: 0,
+  checkpoint: 0,
+  lastRoute: 'main',
+  lastPosition: 0,
+  lastRoll: 1,
+  sideUnlocked: false,
+  campAwarded: true,
+  completed: null,
+  busy: false,
+  log: [{ icon: '⛺', text: '营地起点：获得幸运护盾 ×1。', time: '刚刚' }],
+};
+
+function saveCurrentPlayer() {
+  const current = state.players[state.playerIndex];
+  if (!current) return;
+  Object.assign(current, {
+    route: state.route,
+    position: state.position,
+    sidePosition: state.sidePosition,
+    health: state.health,
+    inventory: { ...state.inventory },
+    skipTurns: state.skipTurns,
+    nextBonus: state.nextBonus,
+    boostTwo: state.boostTwo,
+    immune: state.immune,
+    freeReroll: state.freeReroll,
+    checkpoint: state.checkpoint,
+    lastRoute: state.lastRoute,
+    lastPosition: state.lastPosition,
+    lastRoll: state.lastRoll,
+    sideUnlocked: state.sideUnlocked,
+  });
+}
+
+function loadPlayer(index) {
+  saveCurrentPlayer();
+  const next = state.players[index];
+  state.playerIndex = index;
+  Object.assign(state, {
+    route: next.route,
+    view: next.route,
+    position: next.position,
+    sidePosition: next.sidePosition,
+    health: next.health,
+    inventory: { ...next.inventory },
+    skipTurns: next.skipTurns,
+    nextBonus: next.nextBonus,
+    boostTwo: next.boostTwo,
+    immune: next.immune,
+    freeReroll: next.freeReroll,
+    checkpoint: next.checkpoint,
+    lastRoute: next.lastRoute,
+    lastPosition: next.lastPosition,
+    lastRoll: next.lastRoll,
+    sideUnlocked: next.sideUnlocked,
+    completed: null,
+  });
+}
+
+function switchTurn() {
+  if (state.winner !== null) return;
+  saveCurrentPlayer();
+  loadPlayer(state.playerIndex === 0 ? 1 : 0);
+  renderBoard();
+}
+
+const $ = (selector) => document.querySelector(selector);
+const board = $('#mainBoard');
+const sideBoard = $('#sideBoard');
+const dice = $('#dice');
+const rollButton = $('#rollButton');
+const rollLabel = rollButton.querySelector('span:nth-child(2)');
+const modalBackdrop = $('#modalBackdrop');
+const modalAction = $('#modalAction');
+const modalSecondary = $('#modalSecondary');
+const modalTertiary = $('#modalTertiary');
+const modalClose = $('#modalClose');
+const toast = $('#toast');
+let activeEvent = null;
+let toastTimer;
+
+function currentTiles() { return state.route === 'side' ? sideTiles : mainTiles; }
+function currentPosition() { return state.route === 'side' ? state.sidePosition : state.position; }
+function setCurrentPosition(value) { if (state.route === 'side') state.sidePosition = value; else state.position = value; }
+function tileAt(route = state.route, position = currentPosition()) { return (route === 'side' ? sideTiles : mainTiles)[position]; }
+function clampPosition(value, route = state.route) { return Math.max(0, Math.min((route === 'side' ? sideTiles : mainTiles).length - 1, value)); }
+
+function renderBoard() {
+  saveCurrentPlayer();
+  const renderTiles = (tiles, route) => tiles.map((tile, index) => {
+    const current = state.route === route && currentPosition() === index;
+    const done = state.route === route && index < currentPosition();
+    const next = state.route === route && index === currentPosition() + 1;
+    const playersHere = state.players.map((player, playerIndex) => {
+      const playerPosition = player.route === route ? (route === 'side' ? player.sidePosition : player.position) : -1;
+      return playerPosition === index ? `<span class="player-token player-token--${playerIndex + 1}" title="${player.name}">${playerIndex + 1}</span>` : '';
+    }).join('');
+    const classes = ['tile'];
+    if (route === 'side') classes.push('tile--side');
+    if (done) classes.push('tile--done');
+    if (current) classes.push('tile--current');
+    if (next) classes.push('tile--next');
+    if (tile.type === 'finish' || tile.type === 'sideFinish') classes.push('tile--finish');
+    return `<div class="${classes.join(' ')}" aria-label="${tile.id} ${tile.name}${current ? '，当前位置' : ''}">
+      ${playersHere}${current ? '<span class="tile-badge">现在</span>' : ''}<span class="tile-num">${tile.id}</span><span class="tile-icon" aria-hidden="true">${tile.icon}</span><span class="tile-name">${tile.name}</span><span class="tile-label">${tile.label}</span>
+    </div>`;
+  }).join('');
+  board.innerHTML = renderTiles(mainTiles, 'main');
+  sideBoard.innerHTML = renderTiles(sideTiles, 'side');
+  board.hidden = state.view !== 'main';
+  sideBoard.hidden = state.view !== 'side';
+  $('#mainRouteTab').classList.toggle('is-active', state.view === 'main');
+  $('#sideRouteTab').classList.toggle('is-active', state.view === 'side');
+  $('#mainRouteTab').setAttribute('aria-selected', String(state.view === 'main'));
+  $('#sideRouteTab').setAttribute('aria-selected', String(state.view === 'side'));
+
+  const tile = tileAt();
+  $('#progressValue').textContent = state.route === 'side' ? tile.id : state.position;
+  $('#progressTotal').textContent = state.route === 'side' ? ' / A14' : ' / 32';
+  $('#positionValue').textContent = `${tile.id} · ${tile.name}`;
+  $('#roundValue').textContent = state.round;
+  $('#roundMiniValue').textContent = state.round;
+  $('#healthValue').textContent = `${state.health} / ${state.maxHealth}`;
+  renderPlayerList();
+
+  if (state.winner !== null) {
+    const winner = state.players[state.winner];
+    rollLabel.textContent = '对局结束';
+    $('#actionTitle').textContent = `${winner.name} 获胜！`;
+    $('#actionHint').textContent = winner.route === 'side' ? '完成秘境圣殿，拿下完美结局。' : '抵达山顶圣殿，拿下普通结局。';
+  } else if (state.completed === 'perfect') {
+    rollLabel.textContent = '完美通关';
+    $('#actionTitle').textContent = '秘境圣殿已点亮！';
+    $('#actionHint').textContent = '你走出了隐藏秘径，获得完美结局。';
+  } else if (state.completed === 'normal') {
+    rollLabel.textContent = '已通关';
+    $('#actionTitle').textContent = '山顶圣殿已抵达！';
+    $('#actionHint').textContent = '普通结局完成，重新开始可以挑战秘径。';
+  } else if (state.skipTurns > 0) {
+    rollLabel.textContent = '跳过回合';
+    $('#actionTitle').textContent = '终点迷雾让你停留';
+    $('#actionHint').textContent = '点击按钮跳过本回合，下一回合继续。';
+  } else {
+    rollLabel.textContent = state.freeReroll ? '免费重掷' : (state.nextBonus || state.boostTwo ? '加成掷骰' : '掷骰子');
+    $('#actionTitle').textContent = state.route === 'side' ? '秘径正在前方' : '营地已备好';
+    $('#actionHint').textContent = state.route === 'side' ? '紫色路线通往秘境圣殿。' : '幸运护盾在手，掷出第一步吧。';
+  }
+  rollButton.disabled = state.busy || state.winner !== null || Boolean(state.completed);
+  renderInventory();
+}
+
+function renderPlayerList() {
+  $('#turnPill').textContent = state.winner === null ? `${state.players[state.playerIndex].name} 回合` : `${state.players[state.winner].name} 获胜`;
+  $('#playerList').innerHTML = state.players.map((player, index) => {
+    const routeLabel = player.route === 'side' ? `支线 ${player.sidePosition === 0 ? 'A1' : sideTiles[player.sidePosition].id}` : `主线 ${player.position}`;
+    const active = index === state.playerIndex && state.winner === null;
+    const token = index === 0 ? '①' : '②';
+    return `<div class="player-row ${active ? 'is-active' : ''}" style="--player-color:${player.color}">
+      <span class="player-avatar">${token}</span><span class="player-copy"><strong>${player.name}${active ? ' · 当前行动' : ''}</strong><small>${routeLabel} · ♥ ${player.health}/${state.maxHealth}</small></span><span class="player-items">🛡${player.inventory.shield} 🔄${player.inventory.rewind} 🔥${player.inventory.wind}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderInventory() {
+  $('#inventoryList').innerHTML = Object.entries(itemMeta).map(([key, meta]) => {
+    const count = state.inventory[key];
+    const disabled = count <= 0;
+    return `<button class="item-button" type="button" data-item="${key}" ${disabled ? 'disabled' : ''} title="${meta.use}"><span class="item-icon">${meta.icon}</span><span class="item-name">${meta.name}</span><span class="item-count">×${count}</span></button>`;
+  }).join('');
+}
+
+function renderLog() {
+  $('#logList').innerHTML = state.log.length
+    ? state.log.slice(0, 7).map((entry) => `<div class="log-item"><span class="log-icon">${entry.icon}</span><p>${entry.text}</p><time>${entry.time}</time></div>`).join('')
+    : '<p class="empty-log">还没有冒险记录</p>';
+}
+
+function setDice(value) {
+  const map = { 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] };
+  dice.querySelectorAll('.pip').forEach((pip, index) => pip.classList.toggle('is-on', map[value].includes(index + 1)));
+  dice.setAttribute('aria-label', `骰子点数 ${value}`);
+}
+
+function addLog(icon, text) {
+  state.log.unshift({ icon, text, time: '刚刚' });
+  state.log = state.log.slice(0, 8);
+  renderLog();
+}
+
+function showToast(text) {
+  clearTimeout(toastTimer);
+  toast.textContent = text;
+  toast.classList.add('is-visible');
+  toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2100);
+}
+
+function randomFrom(list) { return list[Math.floor(Math.random() * list.length)]; }
+function setInventory(key, value) { state.inventory[key] = Math.max(0, Math.min(itemMeta[key].max, value)); }
+function addInventory(key, amount = 1) { setInventory(key, state.inventory[key] + amount); }
+function advance(delta) { setCurrentPosition(clampPosition(currentPosition() + delta)); }
+function damage(amount = 1) { state.health = Math.max(0, state.health - amount); }
+
+function recoverRandomItem() {
+  const available = Object.keys(itemMeta).filter((key) => state.inventory[key] < itemMeta[key].max);
+  if (!available.length) return '背包已满，没有道具需要恢复。';
+  const key = randomFrom(available);
+  addInventory(key);
+  return `灵鸟恢复了【${itemMeta[key].name}】。`;
+}
+
+function loseRandomItem() {
+  const owned = Object.keys(itemMeta).filter((key) => state.inventory[key] > 0);
+  if (!owned.length) return '背包空空如也，没有道具丢失。';
+  const key = randomFrom(owned);
+  setInventory(key, state.inventory[key] - 1);
+  return `雷云卷走了【${itemMeta[key].name}】。`;
+}
+
+function defeatCheck() {
+  if (state.health > 0) return '';
+  state.health = 1;
+  state.route = 'main';
+  state.view = 'main';
+  state.position = state.checkpoint;
+  state.sidePosition = 0;
+  return `生命耗尽，回到主线检查点 ${state.checkpoint}，生命保留 1 点。`;
+}
+
+function showModal(event) {
+  activeEvent = event;
+  $('#modalSymbol').textContent = event.symbol;
+  $('#modalEyebrow').textContent = event.eyebrow;
+  $('#modalTitle').textContent = event.title;
+  $('#modalBody').textContent = event.body;
+  $('#modalReward').textContent = event.reward;
+  modalAction.textContent = event.primary || '继续';
+  modalSecondary.textContent = event.secondary || '';
+  modalTertiary.textContent = event.tertiary || '';
+  modalSecondary.hidden = !event.secondary;
+  modalTertiary.hidden = !event.tertiary;
+  modalBackdrop.hidden = false;
+  modalAction.focus();
+}
+
+function openEvent(tile, route, index) {
+  const raw = state.lastRoll;
+  const truth = randomFrom(truthPrompts);
+  const dare = randomFrom(darePrompts);
+  const common = { index, route, rawRoll: raw };
+  const event = (route === 'side' ? sideEvent(tile, common) : mainEvent(tile, common));
+  event.type = tile.type;
+  event.body = event.body || '山风拂过，你继续向前。';
+  showModal(event);
+}
+
+function mainEvent(tile, context) {
+  const raw = context.rawRoll;
+  const truth = randomFrom(truthPrompts);
+  const dare = randomFrom(darePrompts);
+  const events = {
+    camp: { symbol: '⛺', eyebrow: 'CAMP START', title: '营地起点', body: '背好行囊，营火为你照亮第一段路。', reward: state.campAwarded ? '营地已记录，继续前进' : '获得【幸运护盾】×1', primary: '出发', effect: () => { if (!state.campAwarded) { addInventory('shield'); state.campAwarded = true; return '获得幸运护盾 ×1。'; } return '营地记录仍在，平安出发。'; } },
+    safe: { symbol: '🌲', eyebrow: 'MAIN PATH', title: '林间小道', body: '树影轻晃，脚下平稳，没有任何意外。', reward: '无事发生', primary: '继续前进', effect: () => '平安通过。' },
+    herb: { symbol: '💧', eyebrow: 'CLEAR SPRING', title: '清泉', body: '泉水旁长着紫色小草，散发着清凉香气。', reward: '【治愈草药】+1', primary: '采下草药', effect: () => { addInventory('herb'); return '获得一株治愈草药。'; } },
+    rabbit: { symbol: '🐇', eyebrow: 'RABBIT GUIDE', title: '野兔引路', body: '野兔回头看了你一眼，沿着近路蹦跳而去。', reward: '前进 + 2 格', primary: '跟上它', effect: () => { advance(2); return '野兔带你抄近路，前进 2 格。'; } },
+    thorns: { symbol: '🌿', eyebrow: 'THORN BUSH', title: '荆棘丛', body: '荆棘缠住了你的衣角，前方的路也被迫绕远。', reward: '扣 1 ♥，后退 2 格', primary: '咬牙穿过', tertiary: '使用幸运护盾', canShield: true, negative: true, effect: () => { damage(); advance(-2); return '被荆棘划伤，扣 1 点生命并后退 2 格。'; } },
+    chest: { symbol: '🧰', eyebrow: 'FOREST CHEST', title: '林间宝箱', body: `你刚才掷出了 ${raw} 点，宝箱只对偶数骰子打开。`, reward: raw % 2 === 0 ? '偶数！获得【疾风符】' : '奇数，宝箱暂时没有打开', primary: '打开宝箱', effect: () => { if (raw % 2 === 0) { addInventory('wind'); return '偶数骰，获得疾风符。'; } return '奇数骰，宝箱纹丝不动。'; } },
+    bridge: { symbol: '🌉', eyebrow: 'SWAYING BRIDGE', title: '摇晃木桥', body: `木桥晃得厉害，你掷出了 ${raw} 点。`, reward: raw >= 4 ? '≥4，安全通过' : '≤3，后退 1 格', primary: raw >= 4 ? '稳步通过' : '退回岸边', tertiary: raw < 4 ? '使用幸运护盾' : '', canShield: raw < 4, negative: raw < 4, effect: () => { if (raw < 4) { advance(-1); return '木桥摇晃，后退 1 格。'; } return '木桥安全通过。'; } },
+    flowers: { symbol: '🌸', eyebrow: 'FLOWER SEA', title: '漫山花海', body: '花海铺满山坡，花瓣顺着风落在你的肩上。', reward: '下一回合掷骰 + 1', primary: '收下花香', effect: () => { state.nextBonus += 1; return '下一回合掷骰额外 +1。'; } },
+    crossroad: { symbol: '👉', eyebrow: 'CROSSROADS', title: '十字路口', body: '前方分成两条路：绿色主线通往山顶圣殿，紫色秘径藏着完美结局。', reward: '选择你的路线', primary: '走主线山道', secondary: '进入支线秘径', branchChoice: true, effect: () => '留在主线山道。' },
+    campHeal: { symbol: '🏕', eyebrow: 'HALFWAY CAMP', title: '半山腰营地', body: '篝火和干粮都准备好了，身体恢复了一些力气。', reward: '生命 +1（上限 3）', primary: '休整', effect: () => { const before = state.health; state.health = Math.min(state.maxHealth, state.health + 1); return state.health > before ? '生命恢复 1 点。' : '生命已满，平安休息。'; } },
+    rocks: { symbol: '🪨', eyebrow: 'ROCKFALL', title: '落石区', body: `碎石从坡顶滚落，你掷出了 ${raw} 点。`, reward: raw <= 2 ? '≤2，扣 1 ♥' : '掷骰通过，安全无事', primary: raw <= 2 ? '躲避落石' : '继续前进', tertiary: raw <= 2 ? '使用幸运护盾' : '', canShield: raw <= 2, negative: raw <= 2, effect: () => { if (raw <= 2) { damage(); return '被碎石擦伤，扣 1 点生命。'; } return '掷骰通过落石区。'; } },
+    windHelp: { symbol: '🍃', eyebrow: 'MOUNTAIN WIND', title: '山风助力', body: '山风从背后托住你的脚步，远处的路一下近了。', reward: '前进 + 2 格', primary: '顺风前进', effect: () => { advance(2); return '顺风前进 2 格。'; } },
+    hermit: { symbol: '🛖', eyebrow: 'HERMIT HUT', title: '隐士小屋', body: `隐士问：${truth} 由同行者自行判断答案是否正确。`, reward: '答对前进 3 格，答错不动', primary: '答对，前进 3 格', secondary: '答错，原地不动', choice: true, effect: (choice) => { if (choice === 'correct') { advance(3); return '回答正确，前进 3 格。'; } return '答案不够完整，原地不动。'; } },
+    wish: { symbol: '🪨', eyebrow: 'WISHING STONE', title: '许愿石', body: '石面浮出一圈微光，你获得一次免费的重新掷骰机会。', reward: '免费重掷骰子', primary: '记下这份好运', effect: () => { state.freeReroll = 1; return '获得免费重掷机会，下一次掷骰不改变回合。'; } },
+    fruit: { symbol: '🍎', eyebrow: 'WILD FRUIT', title: '野果林', body: '红色野果酸甜可口，像给你套上一层柔软的保护膜。', reward: '本回合免疫负面事件', primary: '吃下野果', effect: () => { state.immune = true; return '下一次负面事件将被免疫。'; } },
+    brokenBridge: { symbol: '🌉', eyebrow: 'BROKEN BRIDGE', title: '断裂吊桥', body: `桥板断了一半，你掷出了 ${raw} 点。`, reward: raw >= 5 ? '≥5，前进 2 格' : '失败，停留在原地', primary: raw >= 5 ? '冲过吊桥' : '停在原地', tertiary: raw < 5 ? '使用幸运护盾' : '', canShield: raw < 5, negative: raw < 5, effect: () => { if (raw >= 5) { advance(2); return '成功冲过吊桥，前进 2 格。'; } return '没有达到安全点数，停留原地。'; } },
+    gale: { symbol: '🌪', eyebrow: 'GALE VALLEY', title: '狂风谷', body: '风压让你站不稳，只能先退回背风处。', reward: '后退 2 格', primary: '退回安全处', tertiary: '使用幸运护盾', canShield: true, negative: true, effect: () => { advance(-2); return '被狂风推回，后退 2 格。'; } },
+    firefly: { symbol: '✨', eyebrow: 'FIREFLY PATH', title: '萤火小径', body: '萤火虫排成一条光路，带你绕过了泥泞地面。', reward: '前进 + 1 格', primary: '沿光路走', effect: () => { advance(1); return '沿萤火光路前进 1 格。'; } },
+    cave: { symbol: '🕳', eyebrow: 'DARK CAVE', title: '暗洞穴', body: `洞口的回声回应着你的骰子：本次掷出 ${raw} 点。`, reward: raw % 2 ? '奇数，前进 3 格' : '偶数，后退 1 格', primary: raw % 2 ? '追着回声前进' : '小心退出', effect: () => { if (raw % 2) { advance(3); return '奇数回声带路，前进 3 格。'; } advance(-1); return '偶数回声，后退 1 格。'; } },
+    station: { symbol: '🏡', eyebrow: 'MOUNTAIN POST', title: '山间驿站', body: '驿站老板递来两件礼物，你只能带走其中一件。', reward: '自选【时光回溯】或 ♥ +1', primary: '拿时光回溯', secondary: '恢复 1 点生命', choice: true, effect: (choice) => { if (choice === 'rewind') { addInventory('rewind'); return '获得时光回溯。'; } state.health = Math.min(state.maxHealth, state.health + 1); return '生命恢复 1 点。'; } },
+    mistGate: { symbol: '🌫', eyebrow: 'MIST GATE', title: '迷雾山门', body: '门后的风向不明，但你能感到道路正在变得清晰。', reward: '下一回合掷骰 + 1', primary: '穿过山门', effect: () => { state.nextBonus += 1; return '下一回合掷骰额外 +1。'; } },
+    stoneCircle: { symbol: '🗿', eyebrow: 'STONE CIRCLE', title: '巨石阵', body: `巨石上的符号与你的骰子呼应：本次掷出 ${raw} 点。`, reward: raw === 6 ? '掷出 6，直接跳到 28 号千年古松' : '没有触发传送，留在原地', primary: raw === 6 ? '接受传送' : '离开巨石阵', effect: () => { if (raw === 6) { state.position = 28; return '巨石阵将你传送到 28 号千年古松。'; } return '巨石阵没有反应。'; } },
+    checkpoint: { symbol: '🔭', eyebrow: 'CHECKPOINT', title: '山巅平台', body: '这里能看见整条山路，平台上的石碑记录了你的进度。', reward: '设置检查点，道具全部保留', primary: '记录检查点', effect: () => { state.checkpoint = 22; return '检查点设为 22 号山巅平台。'; } },
+    cloudSlope: { symbol: '☁', eyebrow: 'CLOUD SLOPE', title: '流云坡', body: '云雾从脚边流过，一路平安。', reward: '平安无事', primary: '穿过云坡', effect: () => '平安通过。' },
+    swamp: { symbol: '🟫', eyebrow: 'MOUNTAIN SWAMP', title: '山涧泥潭', body: '泥潭比想象中更深，靴子陷进去了一半。', reward: '扣 1 ♥，后退 1 格', primary: '拔出脚步', tertiary: '使用幸运护盾', canShield: true, negative: true, effect: () => { damage(); advance(-1); return '陷入泥潭，扣 1 点生命并后退 1 格。'; } },
+    bird: { symbol: '🦜', eyebrow: 'BIRD GIFT', title: '灵鸟赠礼', body: '灵鸟落在你的肩头，叼来一束微光，可以恢复一件已用完的道具。', reward: '随机恢复一个已用完道具', primary: '接下礼物', effect: () => recoverRandomItem() },
+    thunder: { symbol: '⚡', eyebrow: 'THUNDER CLOUD', title: '雷云地带', body: `雷声随着骰子落下，本次掷出 ${raw} 点。`, reward: raw <= 3 ? '≤3，随机丢失一件道具' : '掷骰通过，保住背包', primary: raw <= 3 ? '护住背包' : '穿过雷云', tertiary: raw <= 3 ? '使用幸运护盾' : '', canShield: raw <= 3, negative: raw <= 3, effect: () => raw <= 3 ? loseRandomItem() : '安全通过雷云。' },
+    lookout: { symbol: '🌄', eyebrow: 'LOOKOUT', title: '观景台', body: '从这里看，山顶圣殿已经清晰可见。', reward: '生命 +1（上限 3）', primary: '眺望山顶', effect: () => { const before = state.health; state.health = Math.min(state.maxHealth, state.health + 1); return state.health > before ? '生命恢复 1 点。' : '生命已满，收获一段好风景。'; } },
+    pine: { symbol: '🌳', eyebrow: 'ANCIENT PINE', title: '千年古松', body: '古松的年轮里藏着风的力量，接下来两次掷骰会更有力。', reward: '下两次掷骰 + 1', primary: '触碰树纹', effect: () => { state.boostTwo = 2; return '接下来两次掷骰额外 +1。'; } },
+    troll: { symbol: '👺', eyebrow: 'TROLL TEST', title: '山妖考验', body: `山妖拦住了路，本次掷出 ${raw} 点。`, reward: raw >= 4 ? '≥4，前进 2 格' : '失败，扣 1 ♥', primary: raw >= 4 ? '通过考验' : '接受惩罚', tertiary: raw < 4 ? '使用幸运护盾' : '', canShield: raw < 4, negative: raw < 4, effect: () => { if (raw >= 4) { advance(2); return '通过山妖考验，前进 2 格。'; } damage(); return '考验失败，扣 1 点生命。'; } },
+    stairs: { symbol: '🪜', eyebrow: 'STONE STAIRS', title: '天门石阶', body: '石阶向上延伸，山顶就在薄云之后。', reward: '前进 + 2 格', primary: '登上石阶', effect: () => { advance(2); return '登上石阶，前进 2 格。'; } },
+    finishMist: { symbol: '🌁', eyebrow: 'LAST MIST', title: '终点迷雾', body: '圣殿的轮廓近在眼前，迷雾要求你再停留一回合。', reward: '停留一回合', primary: '等待雾散', effect: () => { state.skipTurns = 1; return '停留一回合，等待终点迷雾散去。'; } },
+    finish: { symbol: '🏆', eyebrow: 'NORMAL ENDING', title: '山顶圣殿', body: '你沿主线走完了整座山，圣殿的钟声为你响起。', reward: '普通结局通关', primary: '举起旗帜', effect: () => { state.completed = 'normal'; return '普通结局通关！'; } },
+  };
+  return { ...events[tile.type], ...context };
+}
+
+function sideEvent(tile, context) {
+  const raw = context.rawRoll;
+  const events = {
+    sideEntry: { symbol: '🕯', eyebrow: 'SECRET PATH', title: '隐秘洞口', body: '你钻进岩壁后的狭缝，紫色的苔藓照亮了秘径。', reward: '进入秘径', primary: '深入洞口', effect: () => '进入支线秘径。' },
+    sidePoison: { symbol: '☠', eyebrow: 'POISON FERN', title: '毒蕨草丛', body: '蕨叶上的露珠泛着不寻常的蓝光。', reward: '扣 1 ♥', primary: '绕开毒蕨', tertiary: '使用幸运护盾', canShield: true, negative: true, effect: () => { damage(); return '被毒蕨擦到，扣 1 点生命。'; } },
+    sideRiver: { symbol: '🌊', eyebrow: 'UNDERGROUND RIVER', title: '地下暗河', body: `暗河水流湍急，本次掷出 ${raw} 点。`, reward: raw >= 3 ? '≥3，安全通过' : '失败，退回 A1', primary: raw >= 3 ? '踏石过河' : '退回洞口', tertiary: raw < 3 ? '使用幸运护盾' : '', canShield: raw < 3, negative: raw < 3, effect: () => { if (raw >= 3) return '踏着河中石块安全通过。'; state.sidePosition = 0; return '水流太急，退回 A1 隐秘洞口。'; } },
+    sideVault: { symbol: '💎', eyebrow: 'UNDERGROUND VAULT', title: '地下宝库', body: '宝库的两件遗物静静躺在石台上，像是在等一位真正的探险者。', reward: '【时光回溯】+【疾风符】', primary: '收下秘宝', effect: () => { addInventory('rewind'); addInventory('wind'); return '获得时光回溯和疾风符。'; } },
+    sideEcho: { symbol: '🔊', eyebrow: 'ECHO HALL', title: '回音长廊', body: `长廊把骰子的声音放大了，本次掷出 ${raw} 点。`, reward: raw === 6 ? '掷出 6，直达 A9' : '回音散去，继续前进', primary: raw === 6 ? '追随回音' : '走出长廊', effect: () => { if (raw === 6) { state.sidePosition = 8; return '回音把你送到 A9 秘境石门。'; } return '回音散去，继续前进。'; } },
+    sideCollapse: { symbol: '🪨', eyebrow: 'CAVE-IN', title: '塌陷路段', body: '岩壁落下碎石，只有贴着墙才能通过。', reward: '扣 1 ♥', primary: '贴墙通过', tertiary: '使用幸运护盾', canShield: true, negative: true, effect: () => { damage(); return '被碎石擦伤，扣 1 点生命。'; } },
+    sideFluorite: { symbol: '💠', eyebrow: 'FLUORITE CAVE', title: '萤石洞穴', body: '萤石的蓝光让你恢复了精神。', reward: '生命 +1（上限 3）', primary: '触碰萤石', effect: () => { const before = state.health; state.health = Math.min(state.maxHealth, state.health + 1); return state.health > before ? '生命恢复 1 点。' : '生命已满，萤石仍为你照亮前路。'; } },
+    sideFork: { symbol: '↔', eyebrow: 'UNDERGROUND FORK', title: '地下岔口', body: `两条路都很安静，本次掷出 ${raw} 点。`, reward: raw % 2 ? '奇数，前进 3 格' : '偶数，原地不动', primary: raw % 2 ? '追随奇数路标' : '在原地观察', effect: () => { if (raw % 2) { advance(3); return '奇数路标指向前方，前进 3 格。'; } return '偶数路标没有指向任何地方，原地不动。'; } },
+    sideGate: { symbol: '🚪', eyebrow: 'SECRET GATE', title: '秘境石门', body: `石门需要足够的力量，本次掷出 ${raw} 点。`, reward: raw >= 5 ? '≥5，跳到 A12' : '失败，退回 A7', primary: raw >= 5 ? '推开石门' : '退回花园', tertiary: raw < 5 ? '使用幸运护盾' : '', canShield: raw < 5, negative: raw < 5, effect: () => { state.sidePosition = raw >= 5 ? 11 : 6; return raw >= 5 ? '石门打开，跳到 A12 天梯。' : '石门纹丝不动，退回 A7 萤石洞穴。'; } },
+    sideAbyss: { symbol: '🕳', eyebrow: 'ABYSS EDGE', title: '深渊边缘', body: '脚边就是无底深渊，你必须贴着岩壁走。', reward: '扣 1 ♥', primary: '沿岩壁前进', tertiary: '使用幸运护盾', canShield: true, negative: true, effect: () => { damage(); return '失足擦伤，扣 1 点生命。'; } },
+    sideGarden: { symbol: '🌺', eyebrow: 'SECRET GARDEN', title: '秘境花园', body: '地下花园的花蜜让所有疲惫都被洗净。', reward: '生命值全部回满', primary: '走进花园', effect: () => { state.health = state.maxHealth; return '生命值全部恢复。'; } },
+    sideLadder: { symbol: '🪜', eyebrow: 'SKY LADDER', title: '天梯', body: '梯子通向一道白色的光，出口就在上面。', reward: '前进 + 3 格', primary: '攀上天梯', effect: () => { advance(3); return '攀上天梯，前进 3 格。'; } },
+    sideExit: { symbol: '🌤', eyebrow: 'SECRET EXIT', title: '秘境出口', body: '你从山体另一侧走出，正好汇合到千年古松附近。', reward: '汇合到主线 28 号位置', primary: '回到主线', effect: () => { state.route = 'main'; state.view = 'main'; state.position = 28; return '从秘境出口汇合到主线 28 号。'; } },
+    sideFinish: { symbol: '🏅', eyebrow: 'PERFECT ENDING', title: '秘境圣殿', body: '你走完了隐藏秘径，圣殿中的金色徽章向你敞开。', reward: '完美结局通关', primary: '领取徽章', effect: () => { state.completed = 'perfect'; return '完美结局通关！'; } },
+  };
+  return { ...events[tile.type], ...context };
+}
+
+function closeEvent() {
+  modalBackdrop.hidden = true;
+  activeEvent = null;
+  state.busy = false;
+  renderBoard();
+}
+
+function resolveEvent(choice = null) {
+  if (!activeEvent) return;
+  if (activeEvent.branchChoice && choice === 'side') {
+    state.sideUnlocked = true;
+    state.route = 'side';
+    state.view = 'side';
+    state.sidePosition = 0;
+    state.round += 1;
+    addLog('👉', '在 8 号十字路口选择支线秘径，进入 A1。');
+    closeEvent();
+    switchTurn();
+    showToast('路线已选择，轮到另一位玩家');
+    return;
+  }
+  if (activeEvent.branchChoice && choice === 'main') {
+    addLog('🌲', '在 8 号十字路口选择主线山道。');
+  }
+  let message;
+  if (choice === 'shield' && activeEvent.canShield && state.inventory.shield > 0) {
+    setInventory('shield', state.inventory.shield - 1);
+    message = `${activeEvent.title}：使用幸运护盾，免除本次惩罚。`;
+  } else if (activeEvent.negative && state.immune) {
+    state.immune = false;
+    message = `${activeEvent.title}：野果的保护生效，免疫本次负面效果。`;
+  } else {
+    message = `${activeEvent.title}：${activeEvent.effect(choice)}`;
+  }
+  const defeat = defeatCheck();
+  if (defeat) message += ` ${defeat}`;
+  addLog(activeEvent.symbol, message);
+  state.round += 1;
+  const completed = state.completed;
+  if (completed) state.winner = state.playerIndex;
+  closeEvent();
+  if (!completed) switchTurn();
+  else renderBoard();
+  showToast(completed ? `${state.players[state.winner].name}${completed === 'perfect' ? '达成完美结局！' : '抵达山顶圣殿！'}` : `${state.players[state.playerIndex].name} 的回合`);
+}
+
+function passTurn() {
+  if (state.busy || state.completed || state.skipTurns <= 0) return;
+  state.busy = true;
+  state.skipTurns -= 1;
+  state.round += 1;
+  addLog('🌫', '本回合停留，等待迷雾散去。');
+  setTimeout(() => { state.busy = false; switchTurn(); showToast(`${state.players[state.playerIndex].name} 的回合`); }, 280);
+  renderBoard();
+}
+
+function roll() {
+  if (state.busy || state.completed) return;
+  if (state.skipTurns > 0) { passTurn(); return; }
+  state.busy = true;
+  const firstRoll = Math.floor(Math.random() * 6) + 1;
+  const secondRoll = state.freeReroll ? Math.floor(Math.random() * 6) + 1 : firstRoll;
+  const currentRaw = Math.max(firstRoll, secondRoll);
+  if (state.freeReroll) state.freeReroll = 0;
+  dice.classList.add('is-rolling');
+  let ticks = 0;
+  const interval = setInterval(() => {
+    setDice(Math.floor(Math.random() * 6) + 1);
+    ticks += 1;
+    if (ticks >= 7) {
+      clearInterval(interval);
+      let effective = currentRaw;
+      if (state.nextBonus > 0) { effective += 1; state.nextBonus -= 1; }
+      if (state.boostTwo > 0) { effective += 1; state.boostTwo -= 1; }
+      state.lastRoll = currentRaw;
+      state.lastRoute = state.route;
+      state.lastPosition = currentPosition();
+      setDice(currentRaw);
+      dice.classList.remove('is-rolling');
+      setCurrentPosition(clampPosition(currentPosition() + effective));
+      addLog('🎲', `${firstRoll !== secondRoll ? `免费重掷取高点 ${currentRaw}` : `掷出 ${currentRaw} 点`}${effective !== currentRaw ? `（实际前进 ${effective} 格）` : ''}，到达 ${tileAt().id} ${tileAt().name}。`);
+      renderBoard();
+      setTimeout(() => openEvent(tileAt(), state.route, currentPosition()), 220);
+    }
+  }, 90);
+}
+
+function useItem(key) {
+  if (state.inventory[key] <= 0) return;
+  if (key === 'shield') {
+    if (activeEvent && activeEvent.canShield) { resolveEvent('shield'); return; }
+    showToast('幸运护盾会在负面事件中使用');
+    return;
+  }
+  if (key === 'herb') {
+    if (state.health >= state.maxHealth) { showToast('生命值已经满了'); return; }
+    setInventory('herb', state.inventory.herb - 1);
+    state.health += 1;
+    addLog('🪻', '使用治愈草药，生命 +1。');
+    renderBoard();
+    showToast('生命恢复 1 点');
+    return;
+  }
+  if (key === 'wind') {
+    setInventory('wind', state.inventory.wind - 1);
+    state.nextBonus += 1;
+    addLog('🔥', '使用疾风符，下一次掷骰 +1。');
+    renderBoard();
+    showToast('疾风符已生效');
+    return;
+  }
+  if (key === 'rewind') {
+    setInventory('rewind', state.inventory.rewind - 1);
+    state.route = state.lastRoute;
+    state.view = state.lastRoute;
+    if (state.lastRoute === 'side') state.sidePosition = state.lastPosition; else state.position = state.lastPosition;
+    addLog('🔄', `使用时光回溯，回到 ${tileAt().id} ${tileAt().name}。`);
+    renderBoard();
+    showToast('时光回溯成功');
+  }
+}
+
+function resetGame() {
+  state.players = [makePlayer('玩家 1', '#bc665b'), makePlayer('玩家 2', '#6f83b7')];
+  state.playerIndex = 0;
+  state.winner = null;
+  state.route = 'main';
+  state.view = 'main';
+  state.position = 0;
+  state.sidePosition = 0;
+  state.health = 3;
+  state.inventory = { shield: 1, rewind: 0, wind: 0, herb: 0 };
+  state.round = 1;
+  state.skipTurns = 0;
+  state.nextBonus = 0;
+  state.boostTwo = 0;
+  state.immune = false;
+  state.checkpoint = 0;
+  state.lastRoute = 'main';
+  state.lastPosition = 0;
+  state.lastRoll = 1;
+  state.freeReroll = 0;
+  state.sideUnlocked = false;
+  state.campAwarded = true;
+  state.completed = null;
+  state.busy = false;
+  loadPlayer(0);
+  state.log = [{ icon: '⛺', text: '营地起点：获得幸运护盾 ×1。', time: '刚刚' }];
+  setDice(1);
+  renderBoard();
+  renderLog();
+  showToast('秘境路线已重置');
+}
+
+function showRules() {
+  showModal({
+    symbol: '♧',
+    eyebrow: 'HOW TO PLAY',
+    title: '山林秘境怎么玩？',
+    body: '从 0 号营地开始，玩家 1 和玩家 2 轮流掷骰。停在哪一格就结算哪一格事件；生命归零会回到最近检查点。8 号十字路口可选择主线或支线，先抵达任意终点的一方获胜。',
+    reward: '道具：护盾抵消惩罚 · 时光回到上一格 · 疾风符让下一掷 +1 · 草药恢复生命',
+    primary: '知道啦',
+  });
+}
+
+$('#resetButton').addEventListener('click', resetGame);
+$('#rulesButton').addEventListener('click', showRules);
+$('#mainRouteTab').addEventListener('click', () => { state.view = 'main'; renderBoard(); });
+$('#sideRouteTab').addEventListener('click', () => { state.view = 'side'; renderBoard(); if (!state.sideUnlocked) showToast('支线预览：到达 8 号路口后可以进入'); });
+$('#inventoryList').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-item]');
+  if (button) useItem(button.dataset.item);
+});
+rollButton.addEventListener('click', roll);
+modalAction.addEventListener('click', () => {
+  if (activeEvent && activeEvent.branchChoice) resolveEvent('main');
+  else if (activeEvent && activeEvent.choice) resolveEvent(activeEvent.type === 'station' ? 'rewind' : 'correct');
+  else resolveEvent();
+});
+modalSecondary.addEventListener('click', () => {
+  if (activeEvent && activeEvent.branchChoice) resolveEvent('side');
+  else if (activeEvent && activeEvent.choice) resolveEvent(activeEvent.type === 'station' ? 'health' : 'wrong');
+});
+modalTertiary.addEventListener('click', () => resolveEvent('shield'));
+modalClose.addEventListener('click', () => { if (activeEvent && activeEvent.effect) resolveEvent(); else closeEvent(); });
+modalBackdrop.addEventListener('click', (event) => { if (event.target === modalBackdrop) { if (activeEvent && activeEvent.effect) resolveEvent(); else closeEvent(); } });
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !modalBackdrop.hidden) { if (activeEvent && activeEvent.effect) resolveEvent(); else closeEvent(); }
+  if (event.code === 'Space' && modalBackdrop.hidden) { event.preventDefault(); roll(); }
+});
+
+setDice(1);
+renderBoard();
+renderLog();
+
+// Online mode keeps the existing game rules on one authoritative client and
+// synchronizes snapshots plus event choices to the second phone.
+const onlineOriginal = { renderBoard, openEvent, closeEvent, roll, resolveEvent, useItem, passTurn, resetGame, showModal };
+const online = { ws: null, clientId: '', roomCode: '', seat: null, role: 'offline', active: false, applying: false, pending: null };
+const onlineCard = $('#onlineCard');
+const onlineLobby = $('#onlineLobby');
+const onlineRoom = $('#onlineRoom');
+const onlineStatus = $('#onlineStatus');
+const onlineHint = $('#onlineHint');
+const onlineRoomHint = $('#onlineRoomHint');
+const roomCodeInput = $('#roomCodeInput');
+const roomCodeValue = $('#roomCodeValue');
+
+function onlineClone(value) { return JSON.parse(JSON.stringify(value)); }
+
+function onlineSetStatus(text) { onlineStatus.textContent = text; }
+
+function onlineAddress() {
+  const configured = new URLSearchParams(location.search).get('server');
+  if (configured) return configured;
+  if (location.protocol !== 'http:' && location.protocol !== 'https:') return '';
+  return `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}`;
+}
+
+function onlineSend(message) {
+  if (online.ws && online.ws.readyState === WebSocket.OPEN) online.ws.send(JSON.stringify(message));
+}
+
+function onlineRenderRoom() {
+  onlineLobby.hidden = online.active;
+  onlineRoom.hidden = !online.active;
+  onlineCard.classList.toggle('is-connected', online.active);
+  if (online.active) {
+    roomCodeValue.textContent = online.roomCode;
+    onlineStatus.textContent = online.role === 'host' ? `房主 · 玩家 ${online.seat + 1}` : `已加入 · 玩家 ${online.seat + 1}`;
+  }
+}
+
+function onlinePublicEvent() {
+  if (!activeEvent || typeof activeEvent.effect !== 'function') return null;
+  const keys = ['symbol', 'eyebrow', 'title', 'body', 'reward', 'primary', 'secondary', 'tertiary', 'branchChoice', 'choice', 'canShield', 'negative', 'type', 'route', 'index', 'rawRoll'];
+  return keys.reduce((result, key) => { if (activeEvent[key] !== undefined) result[key] = activeEvent[key]; return result; }, {});
+}
+
+function onlinePublishState() {
+  if (!online.active || online.role !== 'host') return;
+  saveCurrentPlayer();
+  onlineSend({ type: 'state', snapshot: onlineClone(state), event: onlinePublicEvent() });
+}
+
+function onlineCanAct() {
+  return online.active && online.seat === state.playerIndex && state.winner === null && !state.completed;
+}
+
+function onlineUpdateControls() {
+  if (!online.active) return;
+  const myTurn = online.seat === state.playerIndex;
+  rollButton.disabled = state.busy || state.winner !== null || Boolean(state.completed) || !myTurn;
+  document.querySelectorAll('[data-item]').forEach((button) => {
+    const countNode = button.querySelector('.item-count');
+    button.disabled = Number((countNode ? countNode.textContent : '').replace(/[^0-9]/g, '') || 0) <= 0 || !myTurn;
+  });
+  [modalAction, modalSecondary, modalTertiary].forEach((button) => { button.disabled = Boolean(activeEvent && online.active && !myTurn); });
+  if (online.active && !myTurn && state.winner === null) onlineHint.textContent = `等待玩家 ${state.playerIndex + 1} 操作，结果会自动同步。`;
+}
+
+function onlineApplySnapshot(snapshot, event) {
+  if (!snapshot) return;
+  const next = onlineClone(snapshot);
+  Object.assign(state, next);
+  state.players = next.players || state.players;
+  state.inventory = next.inventory || state.inventory;
+  renderBoard();
+  renderLog();
+  setDice(state.lastRoll || 1);
+  if (event) {
+    const remoteEvent = { ...event, onlineOnly: true };
+    const eventKey = `${event.type}:${event.route}:${event.index}:${event.rawRoll}`;
+    if (!activeEvent || activeEvent.onlineKey !== eventKey) {
+      remoteEvent.onlineKey = eventKey;
+      onlineOriginal.showModal(remoteEvent);
+    }
+  } else if (activeEvent && activeEvent.onlineOnly) {
+    modalBackdrop.hidden = true;
+    activeEvent = null;
+  }
+  onlineUpdateControls();
+}
+
+function onlineHandleIntent(message) {
+  if (online.role !== 'host') return;
+  if (message.action !== 'reset' && message.fromSeat !== state.playerIndex) return;
+  online.applying = true;
+  try {
+    if (message.action === 'roll') onlineOriginal.roll();
+    else if (message.action === 'resolve') onlineOriginal.resolveEvent(message.payload && message.payload.choice !== undefined ? message.payload.choice : null);
+    else if (message.action === 'item') onlineOriginal.useItem(message.payload && message.payload.key);
+    else if (message.action === 'pass') onlineOriginal.passTurn();
+    else if (message.action === 'reset') onlineOriginal.resetGame();
+  } finally {
+    online.applying = false;
+  }
+  onlinePublishState();
+  if (message.action === 'roll' || message.action === 'pass') setTimeout(onlinePublishState, 1050);
+}
+
+function onlineMessage(message) {
+  if (message.type === 'hello') { online.clientId = message.clientId; return; }
+  if (message.type === 'room') {
+    online.active = true;
+    online.roomCode = message.code;
+    online.seat = message.seat;
+    online.role = message.role;
+    onlineRenderRoom();
+    onlineHint.textContent = online.role === 'host' ? '把房间码发给另一部手机，等对方加入后开始。' : '已加入房间，等待房主开始。';
+    if (message.snapshot) onlineApplySnapshot(message.snapshot, message.event);
+    else if (online.role === 'host') setTimeout(onlinePublishState, 80);
+    return;
+  }
+  if (message.type === 'roster') {
+    onlineRoomHint.textContent = message.connected >= 2 ? '两位玩家已连接，可以开始轮流掷骰。' : '等待另一位玩家加入。';
+    onlineSetStatus(`${online.role === 'host' ? '房主' : '玩家'} · ${message.connected}/2 在线`);
+    return;
+  }
+  if (message.type === 'state') {
+    if (!(online.role === 'host' && message.from === online.clientId)) onlineApplySnapshot(message.snapshot, message.event);
+    return;
+  }
+  if (message.type === 'intent') { onlineHandleIntent(message); return; }
+  if (message.type === 'role') {
+    online.role = message.role;
+    onlineRenderRoom();
+    if (message.snapshot) onlineApplySnapshot(message.snapshot, message.event);
+    if (online.role === 'host') setTimeout(onlinePublishState, 80);
+    return;
+  }
+  if (message.type === 'error') { onlineSetStatus('连接提示'); onlineHint.textContent = message.message; showToast(message.message); }
+}
+
+function onlineConnect(kind, code = '') {
+  if (online.ws && online.ws.readyState < WebSocket.CLOSING) return;
+  const address = onlineAddress();
+  if (!address) { onlineSetStatus('无法连接'); onlineHint.textContent = '请通过在线服务器打开此页面，不能从 file:// 本地文件联机。'; return; }
+  online.pending = { kind, code };
+  onlineSetStatus('连接中…');
+  const socket = new WebSocket(address);
+  online.ws = socket;
+  socket.addEventListener('open', () => {
+    const pending = online.pending;
+    onlineSend(pending.kind === 'create' ? { type: 'create', name: '玩家 1' } : { type: 'join', code: pending.code, name: '玩家 2' });
+  });
+  socket.addEventListener('message', (event) => { try { onlineMessage(JSON.parse(event.data)); } catch { onlineSetStatus('消息错误'); } });
+  socket.addEventListener('close', () => {
+    online.active = false;
+    online.role = 'offline';
+    onlineRenderRoom();
+    onlineSetStatus('已断开');
+    onlineHint.textContent = '连接已断开，请重新创建或加入房间。';
+  });
+  socket.addEventListener('error', () => { onlineSetStatus('连接失败'); onlineHint.textContent = '服务器暂时不可用，请检查在线服务地址。'; });
+}
+
+function onlineRequest(action, payload = {}) {
+  if (!onlineCanAct() && action !== 'reset') { showToast('现在不是你的回合'); return; }
+  onlineSend({ type: 'intent', action, payload, requestId: `${Date.now()}-${Math.random()}` });
+}
+
+const localRenderBoard = renderBoard;
+renderBoard = function onlineRenderBoard() { const result = localRenderBoard(); onlineUpdateControls(); return result; };
+const localOpenEvent = openEvent;
+openEvent = function onlineOpenEvent(...args) { const result = localOpenEvent(...args); if (online.role === 'host') onlinePublishState(); return result; };
+const localCloseEvent = closeEvent;
+closeEvent = function onlineCloseEvent() {
+  if (online.active && online.role === 'guest' && activeEvent && activeEvent.onlineOnly && !online.applying) { showToast('请等待房主同步结果'); return; }
+  const result = localCloseEvent();
+  if (online.role === 'host' && !online.applying) onlinePublishState();
+  return result;
+};
+const localRoll = roll;
+roll = function onlineRoll() { if (online.active && !online.applying) return onlineRequest('roll'); return localRoll(); };
+const localResolveEvent = resolveEvent;
+resolveEvent = function onlineResolveEvent(choice = null) { if (online.active && !online.applying) return onlineRequest('resolve', { choice }); return localResolveEvent(choice); };
+const localUseItem = useItem;
+useItem = function onlineUseItem(key) { if (online.active && !online.applying) return onlineRequest('item', { key }); return localUseItem(key); };
+const localPassTurn = passTurn;
+passTurn = function onlinePassTurn() { if (online.active && !online.applying) return onlineRequest('pass'); const result = localPassTurn(); if (online.role === 'host') setTimeout(onlinePublishState, 350); return result; };
+const localResetGame = resetGame;
+resetGame = function onlineResetGame() { if (online.active && !online.applying) { if (online.role !== 'host') return showToast('只有房主可以重新开始'); return onlineRequest('reset'); } return localResetGame(); };
+
+rollButton.removeEventListener('click', onlineOriginal.roll);
+rollButton.addEventListener('click', () => roll());
+$('#createRoomButton').addEventListener('click', () => onlineConnect('create'));
+$('#joinRoomButton').addEventListener('click', () => {
+  const code = roomCodeInput.value.trim().toUpperCase();
+  if (code.length !== 5) return showToast('请输入 5 位房间码');
+  onlineConnect('join', code);
+});
+roomCodeInput.addEventListener('input', () => { roomCodeInput.value = roomCodeInput.value.replace(/[^a-z0-9]/gi, '').toUpperCase().slice(0, 5); });
+$('#copyRoomButton').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(online.roomCode); showToast('房间码已复制'); }
+  catch { if (roomCodeValue.select) roomCodeValue.select(); showToast(`房间码：${online.roomCode}`); }
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "forest-mystery-online",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Two-player online dice adventure for WeChat webview",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
